@@ -1,0 +1,225 @@
+#!/bin/sh
+# Pegasus One
+
+logo="\
+__________                                          ________                 
+\______   \ ____   _________    ________ __  ______ \_____  \   ____   ____  
+ |     ___// __ \ / ___\__  \  /  ___/  |  \/  ___/  /   |   \ /    \_/ __ \ 
+ |    |   \  ___// /_/  > __ \_\___ \|  |  /\___ \  /    |    \   |  \  ___/ 
+ |____|    \___  >___  (____  /____  >____//____  > \_______  /___|  /\___  >
+               \/_____/     \/     \/           \/          \/     \/     \/ 
+\
+"
+
+# checking for system home dir
+if [ -d $HOME ]; then
+  home=$HOME
+else
+  home="~/"
+fi
+
+# checking for system bin dir
+if [ -d /data/data/com.termux/files/usr/bin ]; then
+  bin="/data/data/com.termux/files/usr/bin"
+elif [ -d /usr/local/bin ]; then
+  bin="/usr/local/bin"
+elif [ -d /bin ]; then
+  bin="/bin"
+elif [ -d /sbin ]; then
+  bin="/sbin"
+fi
+
+# checking for configuration dir
+if [ -d /data/data/com.termux/files/usr/etc ]; then
+  conf_dir="/data/data/com.termux/files/usr/etc"
+elif [ -d /etc ]; then
+  conf_dir="/etc"
+fi
+
+# configuration files
+if [ -d $conf_dir/pegasus-one ]; then
+  if [ -e $conf_dir/pegasus-one/data/tools.dat ]; then
+    tools_data="$conf_dir/pegasus-one/data/tools.dat"
+  fi
+  if [ -e $conf_dir/pegasus-one/data/category.dat ]; then
+    category_data="$conf_dir/pegasus-one/data/category.dat"
+  fi
+else
+  if [ -e data/tools.dat ]; then
+    tools_data="data/tools.dat"
+  fi
+  if [ -e data/category.dat ]; then
+    category_data="data/category.dat"
+  fi
+fi
+
+# checking for system root access
+if [ -e /usr/lib/sudo ]; then
+  sudo="sudo"
+elif [ -e /usr/bin/sudo ]; then
+  sudo="sudo"
+elif [ -e /usr/sbin/sudo ]; then
+  sudo="sudo"
+elif [ -e /lib/sudo ]; then
+  sudo="sudo"
+elif [ -e /bin/sudo ]; then
+  sudo="sudo"
+elif [ -e /sbin/sudo ]; then
+  sudo="sudo"
+elif [ -e /data/data/com.termux/files/usr/bin/sudo ]; then
+  sudo="sudo"
+else
+  sudo=""
+fi
+
+# checking for system package manager
+if [ -e /bin/apt ]; then
+  pac="apt-get"
+  system="linux"
+elif [ -e /bin/apt-get ]; then
+  pac="apt-get"
+  system="linux"
+elif [ -e /usr/bin/apt-get ]; then
+  pac="apt-get"
+  system="linux"
+elif [ -e /sbin/apt-get ]; then
+  pac="apt-get"
+  system="linux"
+elif [ -e /usr/sbin/apt-get ]; then
+  pac="apt-get"
+  system="linux"
+elif [ -e /bin/apk ]; then
+  pac="apk"
+  system="linux"
+elif [ -e /usr/bin/apk ]; then
+  pac="apk"
+  system="linux"
+elif [ -e /sbin/apk ]; then
+  pac="apk"
+  system="linux"
+elif [ -e /usr/sbin/apk ]; then
+  pac="apk"
+  system="linux"
+elif [ -e /bin/yum ]; then
+  pac="yum"
+  system="fedora"
+elif [ -e /usr/bin/yum ]; then
+  pac="yum"
+  system="fedora"
+elif [ -e /sbin/yum ]; then
+  pac="yum"
+  system="fedora"
+elif [ -e /usr/sbin/yum ]; then
+  pac="yum"
+  system="fedora"
+elif [ -e /usr/local/bin/brew ]; then
+  pac="brew"
+  system="mac"
+  sudo=""
+elif [ -e /data/data/com.termux/files/usr/bin/pkg ]; then
+  pac="pkg"
+  system="termux"
+elif [ -e /data/data/com.termux/files/usr/bin/apt ]; then
+  pac="apt"
+  system="termux"
+elif [ -e /data/data/com.termux/files/usr/bin/apt-get ]; then
+  pac="apt-get"
+  system="termux"
+fi
+
+# setup process
+clear
+echo "$logo"
+echo "\033[01;32m Installing .... \033[00m"
+sleep 1
+echo "\033[01;33m Running setup .... \033[00m"
+sleep 1
+
+# installing dependency
+if [ ! -e $bin/wget ]; then
+  if [ $sudo ]; then
+    $sudo $pac install wget -y
+  else
+    $pac install wget -y
+  fi
+fi
+if [ ! -e $bin/curl ]; then
+  if [ $sudo ]; then
+    $sudo $pac install curl -y
+  else
+    $pac install curl -y
+  fi
+fi
+if [ ! -e $bin/git ]; then
+  if [ $sudo ]; then
+    $sudo $pac install git -y
+  else
+    $pac install git -y
+  fi
+fi
+
+# removing old one
+if [ -e $bin/pegasus-one ]; then
+  if [ -d $conf_dir/pegasus-one ]; then
+    if [ $sudo ]; then
+      $sudo rm -rf $bin/pegasus-one
+      $sudo rm -rf $conf_dir/pegasus-one
+    else
+      rm -rf $bin/pegasus-one
+      rm -rf $conf_dir/pegasus-one
+    fi
+  fi
+fi
+
+# install pegasus-one
+if [ $0 = "install" -o $0 = "./install" ]; then
+  if [ -e pegasus-one ]; then
+    if [ $sudo ]; then
+      $sudo mv -v pegasus-one $bin
+      $sudo chmod +x $bin/pegasus-one
+    else
+      mv -v pegasus-one $bin
+      chmod +x $bin/pegasus-one
+    fi
+  fi
+  cd ..
+  if [ -d pegasus-one ]; then
+    if [ $sudo ]; then
+    $sudo mv -v pegasus-one $conf_dir
+    else
+      mv -v pegasus-one $conf_dir
+    fi
+  fi
+else
+  if [ -e pegasus-one/pegasus-one ]; then
+    if [ $sudo ]; then
+      $sudo mv -v pegasus-one/pegasus-one $bin
+      $sudo chmod +x $bin/pegasus-one
+    else
+      mv -v pegasus-one/pegasus-one $bin
+      chmod +x $bin/pegasus-one
+    fi
+  fi
+  if [ -d pegasus-one ]; then
+    if [ $sudo ]; then
+    $sudo mv -v pegasus-one $conf_dir
+    else
+      mv -v pegasus-one $conf_dir
+    fi
+  fi
+fi
+
+# check pegasus-one is installed or not
+if [ -e $bin/pegasus-one ]; then
+  if [ -d $conf_dir/pegasus-one ]; then
+    clear
+    echo "$logo"
+    echo " \033[00mpegasus-one \033[01;32minstalled successfully !!"
+    echo " \033[01;32mtype \033[00m'pegasus-one -h'\033[01;32m for more.\033[00m"
+  else
+    clear
+    echo "$logo"
+    echo " \033[01;31mSorry \033[00m: pegasus-one \033[01;31mis not installed !!"
+    echo " \033[01;32mPlease try again\033[00m"
+  fi
+fi
